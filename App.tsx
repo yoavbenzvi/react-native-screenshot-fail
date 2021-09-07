@@ -61,6 +61,8 @@ const Section = ({children, title}): Node => {
 
 const App: () => Node = () => {
   const [localisedMap, setLocalisedMap] = useState({});
+  const [language, setLanguage] = useState("en");
+  const [isScreenshotMenuOpen, setIsScreenshotMenuOpen] = useState(false);
 
   useEffect(async () => {
     
@@ -84,10 +86,21 @@ const App: () => Node = () => {
     } 
 
     await applangaInit()
+
+    ///////////
+    // console.log(await Applanga.getString('test_key', ''))
   }, [])
 
-  const onButtonClick = () => {
-    console.log('button clicked')
+  const OnButtonClick = () => {
+    console.log('button clicked');
+    // Applanga.showDraftModeDialog()
+    if (!isScreenshotMenuOpen) {
+      Applanga.showScreenShotMenu()
+      setIsScreenshotMenuOpen(true)
+    } else {
+      Applanga.hideScreenShotMenu()
+      setIsScreenshotMenuOpen(false)
+    }
   }
 
   const isDarkMode = useColorScheme() === 'dark';
@@ -99,10 +112,6 @@ const App: () => Node = () => {
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
@@ -110,14 +119,16 @@ const App: () => Node = () => {
           <Section title="Step One">
             This is an edited text!
           </Section>
-          <Section>
-            test
-          </Section>
-          <Section>
-            <Button onPress={() => onButtonClick()} title="Click me"/>
-          </Section>
+          {
+            localisedMap[language] && (
+              <Section>
+              {localisedMap[language].localized_string}
+              </Section>
+            )
+          }
+          <Button onPress={() => OnButtonClick()} title="Click me"/>
+          <Button onPress={() => console.log(localisedMap)} title="log map"/>
         </View>
-      </ScrollView>
     </SafeAreaView>
   );
 };
